@@ -1,0 +1,15 @@
+STRINGTABLE Tmeshcheck
+{
+    Tmeshcheck                  "Тег MeshCheck";
+    MESHCHECK_ENABLED           "Включить подсветку";
+    MESHCHECK_ANGLE_THRESHOLD   "Порог угла";
+    MESHCHECK_EDGE_WIDTH        "Толщина линии";
+    MESHCHECK_DEPTH_TEST        "Тест глубины (скрывать за мешем)";
+    MESHCHECK_USE_GRADIENT      "Градиент по углу";
+    MESHCHECK_EDGE_COLOR        "Цвет рёбер";
+    MESHCHECK_COLOR_MIN         "Цвет на пороге";
+    MESHCHECK_COLOR_MAX         "Цвет на 180°";
+    MESHCHECK_SHOW_BOUNDARY     "Подсвечивать граничные рёбра";
+    MESHCHECK_BOUNDARY_COLOR    "Цвет границы";
+    MESHCHECK_INFO_COUNT        "Статус";
+}

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B92845CD-8293-5C7B-A2DB-C4E5F6B789FA}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <UseMultiToolTask>true</UseMultiToolTask>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>C4D_MeshCheck</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\user\Desktop\cpp\C4D_MeshCheck\sdk_2026\build\bin\Release\plugins\C4D_MeshCheck\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C4D_MeshCheck.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C4D_MeshCheck</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.xdl64</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\user\Desktop\cpp\C4D_MeshCheck\res;C:\Users\user\Desktop\cpp\C4D_MeshCheck\res\strings_en-US;C:\Users\user\Desktop\cpp\C4D_MeshCheck\source;C:\Users\user\Desktop\cpp\C4D_MeshCheck\sdk_2026\build\generated\C4D_MeshCheck\hxx;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\cinema.framework\source;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\cinema.framework\source\c4d_customgui;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\cinema.framework\source\c4d_gv;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\cinema.framework\source\c4d_libs;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\cinema.framework\source\c4d_misc;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\cinema.framework\source\c4d_misc\utilities;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\cinema.framework\source\description;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\build\generated\cinema.framework\hxx;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\mesh_misc.framework\source;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\build\generated\mesh_misc.framework\hxx;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\core.framework\source;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\core.framework\source\maxon\math;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\core.framework\source\maxon\utilities;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\build\generated\core.framework\hxx;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\modeling_geom.framework\source;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\modeling_geom.framework\source\maxon\convexdecomposition;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\build\generated\modeling_geom.framework\hxx;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\frameworks\math.framework\source;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\build\generated\math.framework\hxx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /EHs-c- /vmg /vms /bigobj /Gw /Zc:__cplusplus</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CallingConvention>Cdecl</CallingConvention>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DisableSpecificWarnings>5267;5266;5263;5262;5256;5246;5220;5219;5204;5045;5039;5027;5026;4996;4987;4946;4928;4917;4883;4868;4826;4820;4800;4774;4768;4738;4714;4711;4710;4706;4668;4647;4640;4628;4626;4625;4623;4611;4592;4577;4574;4571;4548;4530;4519;4514;4503;4464;4463;4458;4371;4365;4355;4351;4350;4324;4307;4305;4296;4266;4265;4245;4244;4201;4200;4191;4131;4127;4101;4100;4063;4062;4061;4003</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatSpecificWarningsAsErrors>4505;4834</TreatSpecificWarningsAsErrors>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);USE_API_MAXON;MAXON_CMAKE_BUILD;MAXON_MODULE_ID="net.maxonexample.c4dmeshcheck";_HAS_EXCEPTIONS=0;MAXON_TARGET_64BIT;MAXON_SILENT_INIT;MAXON_TARGET_RELEASE;UNICODE;_UNICODE;_CONSOLE;__64BIT;PSAPI_VERSION=1;_HAS_AUTO_PTR_ETC;__PC;_CRT_SECURE_NO_WARNINGS;_WINDOWS;_WIN64;MAXON_TARGET_WINDOWS;_WINDLL;_SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING;_RELEASE;NDEBUG;CMAKE_INTDIR="Release";C4D_MeshCheck_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <PreBuildEvent>
+      <Message>Maxon Source Processor</Message>
+      <Command>setlocal
+"C:\Program Files\Python314\python.exe" C:/Users/user/Desktop/cpp/C4D_DollyZoom/sdk_2026/frameworks/settings/sourceprocessor/sourceprocessor.py --option stylecheck.aswarnings=true --option excludesplitregistercpps=true --quiet --generatedroot "C:/Users/user/Desktop/cpp/C4D_MeshCheck/sdk_2026/build/generated" --frameworkroot "C:/Users/user/Desktop/cpp/C4D_DollyZoom/sdk_2026/frameworks" "C:/Users/user/Desktop/cpp/C4D_MeshCheck"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Message>Create symlinks to runtime resources for plugins.</Message>
+      <Command>setlocal
+powershell -Command "if (-not (Test-Path 'C:\Users\user\Desktop\cpp\C4D_MeshCheck\sdk_2026\build\bin\Release\plugins\C4D_MeshCheck\res')) { New-Item -ItemType Junction -Path 'C:\Users\user\Desktop\cpp\C4D_MeshCheck\sdk_2026\build\bin\Release\plugins\C4D_MeshCheck\res' -Target 'C:\Users\user\Desktop\cpp\C4D_MeshCheck\res' }"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\build\bin\Release\libs\cinema.framework.lib;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\build\bin\Release\libs\core.framework.lib;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\build\bin\Release\libs\mesh_misc.framework.lib;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\build\bin\Release\libs\modeling_geom.framework.lib;C:\Users\user\Desktop\cpp\C4D_DollyZoom\sdk_2026\build\bin\Release\libs\math.framework.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64 -IGNORE:4099</AdditionalOptions>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/user/Desktop/cpp/C4D_MeshCheck/sdk_2026/build/bin/Release/libs/C4D_MeshCheck.lib</ImportLibrary>
+      <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ProgramDataBaseFile>C:/Users/user/Desktop/cpp/C4D_MeshCheck/sdk_2026/build/bin/Release/plugins/C4D_MeshCheck/C4D_MeshCheck.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+      <TypeLibraryResourceID>1</TypeLibraryResourceID>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\user\Desktop\cpp\C4D_MeshCheck\source\main.cpp" />
+    <ClCompile Include="C:\Users\user\Desktop\cpp\C4D_MeshCheck\source\meshcheck_tag.cpp" />
+    <ClInclude Include="C:\Users\user\Desktop\cpp\C4D_MeshCheck\source\meshcheck_tag.h" />
+    <ClInclude Include="C:\Users\user\Desktop\cpp\C4D_MeshCheck\project\projectdefinition.txt" />
+    <ClCompile Include="C:\Users\user\Desktop\cpp\C4D_MeshCheck\sdk_2026\build\generated\C4D_MeshCheck\hxx\interface_registration.cpp" />
+    <ClCompile Include="C:\Users\user\Desktop\cpp\C4D_MeshCheck\sdk_2026\build\generated\C4D_MeshCheck\hxx\register.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
