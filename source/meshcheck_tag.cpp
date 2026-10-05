@@ -515,9 +515,13 @@ Bool MeshCheckCommand::Execute(BaseDocument* doc, GeDialog* parentManager)
 
 Bool RegisterMeshCheckTag()
 {
+    String name = GeLoadString(IDS_MESHCHECK_TAG);
+    if (name.IsEmpty() || name == "StrNotFound"_s)
+        name = "MeshCheck"_s;
+
     return RegisterTagPlugin(
         PLUGIN_ID_MESHCHECK_TAG,
-        GeLoadString(IDS_MESHCHECK_TAG),
+        name,
         TAG_VISIBLE | TAG_EXPRESSION | TAG_IMPLEMENTS_DRAW_FUNCTION,
         MeshCheckTagData::Alloc,
         "Tmeshcheck"_s,
@@ -528,9 +532,13 @@ Bool RegisterMeshCheckTag()
 
 Bool RegisterMeshCheckCommand()
 {
+    String name = GeLoadString(IDS_MESHCHECK_COMMAND);
+    if (name.IsEmpty() || name == "StrNotFound"_s)
+        name = "Toggle MeshCheck Tag"_s;
+
     return RegisterCommandPlugin(
         PLUGIN_ID_MESHCHECK_COMMAND,
-        GeLoadString(IDS_MESHCHECK_COMMAND),
+        name,
         0,
         AutoBitmap("meshcheck.png"_s),
         "Toggle MeshCheck Tag on Active Object"_s,

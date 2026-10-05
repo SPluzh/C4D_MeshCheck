@@ -1,0 +1,8 @@
+// C4D-StringResource
+// Identifier Text
+
+STRINGTABLE
+{
+    IDS_MESHCHECK_TAG     "MeshCheck";
+    IDS_MESHCHECK_COMMAND "Toggle MeshCheck Tag";
+}
