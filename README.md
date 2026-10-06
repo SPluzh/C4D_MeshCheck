@@ -36,12 +36,12 @@ Designed for topology validation and detecting critical creases/creasing angles 
 | Parameter | Description | Default Value |
 |---|---|---|
 | **Enable Highlighting** (`MESHCHECK_ENABLED`) | Enable or disable viewport line display | `On` |
-| **Angle Threshold** (`MESHCHECK_ANGLE_THRESHOLD`) | Angle between polygons in degrees | `89°` |
+| **Highlight from Angle** (`MESHCHECK_ANGLE_THRESHOLD`) | Angle starting from which edges are highlighted (in degrees) | `89°` |
 | **Line Width** (`MESHCHECK_EDGE_WIDTH`) | Viewport line rendering thickness | `2.5 px` |
 | **Depth Test** (`MESHCHECK_DEPTH_TEST`) | Occlude edges behind geometry (Z-buffer test) | `On` |
 | **Angle Gradient** (`MESHCHECK_USE_GRADIENT`) | Smooth color transition from yellow to red | `On` |
 | **Edge Color** (`MESHCHECK_EDGE_COLOR`) | Solid color (when gradient is disabled) | Orange-Red |
-| **Threshold Color** (`MESHCHECK_COLOR_MIN`) | Edge color at the minimum angle threshold | Yellow / Amber |
+| **Color at Min Angle** (`MESHCHECK_COLOR_MIN`) | Edge color at the minimum angle threshold | Yellow / Amber |
 | **180° Color** (`MESHCHECK_COLOR_MAX`) | Edge color at maximum angle / inverted normals | Bright Red |
 | **Show Boundary Edges** (`MESHCHECK_SHOW_BOUNDARY`) | Enable display of open mesh boundary edges | `Off` |
 | **Boundary Color** (`MESHCHECK_BOUNDARY_COLOR`) | Color of boundary edges | Cyan |

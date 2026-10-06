@@ -22,7 +22,7 @@ Bool MeshCheckTagData::Init(GeListNode* node, Bool isCloneInit)
     if (!isCloneInit)
     {
         data->SetBool(MESHCHECK_ENABLED, true);
-        data->SetFloat(MESHCHECK_ANGLE_THRESHOLD, 89.0);
+        data->SetFloat(MESHCHECK_ANGLE_THRESHOLD, DegToRad(89.0));
         data->SetFloat(MESHCHECK_EDGE_WIDTH, 2.5);
         data->SetBool(MESHCHECK_DEPTH_TEST, true);
         data->SetBool(MESHCHECK_USE_GRADIENT, true);
@@ -137,7 +137,10 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
         return;
 
     const Bool enabled = data->GetBool(MESHCHECK_ENABLED, true);
-    const Float threshold = data->GetFloat(MESHCHECK_ANGLE_THRESHOLD, 89.0);
+    Float thresholdRad = data->GetFloat(MESHCHECK_ANGLE_THRESHOLD, DegToRad(89.0));
+    if (thresholdRad > maxon::PI)
+        thresholdRad = DegToRad(thresholdRad);
+    const Float thresholdDeg = RadToDeg(thresholdRad);
     const Bool showBoundary = data->GetBool(MESHCHECK_SHOW_BOUNDARY, false);
 
     if (!enabled)
@@ -167,7 +170,7 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
         dirtyChecksum == m_lastDirtyChecksum &&
         pointCount == m_lastPointCount &&
         polyCount == m_lastPolyCount &&
-        Abs(threshold - m_lastThreshold) < 0.01 &&
+        Abs(thresholdDeg - m_lastThreshold) < 0.01 &&
         showBoundary == m_lastShowBoundary &&
         enabled == m_lastEnabled)
     {
@@ -177,7 +180,7 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
     m_lastDirtyChecksum = dirtyChecksum;
     m_lastPointCount = pointCount;
     m_lastPolyCount = polyCount;
-    m_lastThreshold = threshold;
+    m_lastThreshold = thresholdDeg;
     m_lastShowBoundary = showBoundary;
     m_lastEnabled = enabled;
 
@@ -257,7 +260,7 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
             dot = ClampValue(dot, -1.0, 1.0);
             Float angleDeg = RadToDeg(ACos(dot));
 
-            if (angleDeg >= threshold)
+            if (angleDeg >= thresholdDeg)
             {
                 HighlightEdge he;
                 he.v0 = v0;
@@ -342,7 +345,10 @@ Bool MeshCheckTagData::Draw(BaseTag* tag, BaseObject* op, BaseDraw* bd, BaseDraw
     if (!points)
         return true;
 
-    const Float threshold = data->GetFloat(MESHCHECK_ANGLE_THRESHOLD, 89.0);
+    Float thresholdRad = data->GetFloat(MESHCHECK_ANGLE_THRESHOLD, DegToRad(89.0));
+    if (thresholdRad > maxon::PI)
+        thresholdRad = DegToRad(thresholdRad);
+    const Float thresholdDeg = RadToDeg(thresholdRad);
     Float lineWidth = data->GetFloat(MESHCHECK_EDGE_WIDTH, 2.5);
     if (lineWidth < 1.0) lineWidth = 1.0;
     if (lineWidth > 10.0) lineWidth = 10.0;
@@ -426,8 +432,8 @@ Bool MeshCheckTagData::Draw(BaseTag* tag, BaseObject* op, BaseDraw* bd, BaseDraw
             if (useGradient)
             {
                 Float t = 0.0;
-                if (threshold < 180.0)
-                    t = (he.angle - threshold) / (180.0 - threshold);
+                if (thresholdDeg < 180.0)
+                    t = (he.angle - thresholdDeg) / (180.0 - thresholdDeg);
                 t = ClampValue(t, 0.0, 1.0);
                 col = (1.0 - t) * colMin + t * colMax;
             }
