@@ -17,6 +17,9 @@ struct HighlightEdge
     Float angle = 0.0;
     Bool  isBoundary = false;
     Bool  isNonManifold = false;
+    Bool  isAngleProblem = false;
+    Bool  isHardEdge = false;
+    Bool  isUVSeam = false;
 };
 
 class MeshCheckTagData : public TagData
@@ -42,10 +45,16 @@ private:
     mutable Int32  m_lastPointCount = 0;
     mutable Int32  m_lastPolyCount = 0;
     mutable Float  m_lastThreshold = -1.0;
+    mutable Bool   m_lastShowAngle = true;
+    mutable Bool   m_lastShowHardEdges = false;
+    mutable Bool   m_lastHardIncludePhongAngle = true;
+    mutable Bool   m_lastShowUVSeams = false;
     mutable Bool   m_lastShowBoundary = false;
     mutable Bool   m_lastEnabled = true;
     mutable Int32  m_problemEdgeCount = 0;
     mutable Int32  m_boundaryEdgeCount = 0;
+    mutable Int32  m_hardEdgeCount = 0;
+    mutable Int32  m_uvSeamCount = 0;
 };
 
 class MeshCheckCommand : public CommandData

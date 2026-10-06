@@ -23,21 +23,38 @@ Inspired by Cinema 4D's native modeling mesh checker, **C4D_MeshCheck** provides
   - Renders edges using a smooth color ramp: starts at **Color at Min Angle** (default: amber/yellow) at the threshold angle and transitions to **180° Color** (default: bright red) as the crease approaches 180°.
 - **Solid Color Option**: Disable the gradient to render all highlighted edges with a single uniform color.
 
-### 3. Boundary & Non-Manifold Topology Detection
+### 3. Hard Edges Highlighting
+- **Explicit Phong Breaks**: Automatically detects and highlights edges broken via Cinema 4D's *Break Phong Shading* (`GetPhongBreak()`).
+- **Normal Tag Split Detection**: Accurately detects split vertex normals on imported meshes (CAD, FBX, weighted normals).
+- **Phong Tag Angle Shading Breaks**: Optional toggle (`Include Phong Tag Angle`) to highlight edges where dihedral angle exceeds the object's active Phong tag angle limit.
+- **Dedicated Color**: Customizable hard edge color (default: Dodger Blue).
+
+### 4. UV Seams Highlighting
+- **Geometric UV Discontinuity Analysis**: Inspects the object's active UV map (`UVWTag`) and flags all internal edges where UV islands/charts are split.
+- **Native BodyPaint Seam Synchronization**: Seamlessly checks both native UV seams (`GetUVSeams2`) and direct UVW coordinates for 100% reliability across polygon objects, generators, and deformer caches.
+- **Dedicated Color**: Customizable UV seam color (default: Lime Green).
+
+### 5. Combined Hard & UV Seam Workflow (Game-Ready Asset Checking)
+- **Distinct Color for Hard + Seams**: Enables immediate identification of the 3 essential asset states:
+  - *Hard Edge Only* (unseamed hard edge — potential normal map bake artifact).
+  - *UV Seam Only* (soft edge along UV chart border).
+  - *Hard Edge + UV Seam* (correctly seamed hard edge, default: Purple).
+
+### 6. Boundary & Non-Manifold Topology Detection
 - **Open Boundary Edges**: Optional highlighting of border edges belonging to only one polygon (default: cyan).
 - **Non-Manifold Edges**: Automatically flags complex topology errors (edges shared by 3 or more polygons) in distinct magenta.
 
-### 4. High-Quality Viewport Rendering
+### 7. High-Quality Viewport Rendering
 - **Screen-Space Anti-Aliasing**: Multi-pass screen-space line renderer with configurable thickness (1–10 px).
 - **Depth Testing & Occlusion**: Hardware Z-buffer depth test (`DRAW_Z_LOWEREQUAL`) with line Z-offset (`LineZOffset`) prevents Z-fighting while properly occluding edges behind the mesh.
 
-### 5. Instant Workflow & High Performance (60+ FPS)
+### 8. Instant Workflow & High Performance (60+ FPS)
 - **Tag & Command Integration**:
   - Add the `MeshCheck` tag to any polygon object, generator, or deformer cache.
   - Use the `Toggle MeshCheck Tag` command to quickly apply or toggle the tag on selected objects with a single click.
 - **Zero Viewport Overhead**:
   - High-speed 64-bit packed vertex key hashing via `maxon::HashMap`.
-  - Smart dirty-state caching (`DIRTYFLAGS::DATA`): geometry is recalculated only when mesh topology or tag settings change.
+  - Smart dirty-state caching (`DIRTYFLAGS::DATA | DIRTYFLAGS::SELECT` and tag dirty state): geometry is recalculated only when mesh topology, UVs, normals, or tag settings change.
 
 ---
 
@@ -45,23 +62,31 @@ Inspired by Cinema 4D's native modeling mesh checker, **C4D_MeshCheck** provides
 
 | Parameter | Description | Default Value |
 |---|---|---|
-| **Enable Highlighting** (`MESHCHECK_ENABLED`) | Enable or disable viewport line display | `On` |
-| **Highlight from Angle** (`MESHCHECK_ANGLE_THRESHOLD`) | Angle starting from which edges are highlighted (in degrees) | `89°` |
+| **Enable Highlighting** (`MESHCHECK_ENABLED`) | Master toggle for viewport line display | `On` |
 | **Line Width** (`MESHCHECK_EDGE_WIDTH`) | Viewport line rendering thickness (1–10 px) | `2.5 px` |
 | **Depth Test** (`MESHCHECK_DEPTH_TEST`) | Occlude edges behind geometry (Z-buffer test) | `On` |
+| **Highlight by Angle** (`MESHCHECK_SHOW_ANGLE`) | Toggle dihedral angle threshold analysis | `On` |
+| **Highlight from Angle** (`MESHCHECK_ANGLE_THRESHOLD`) | Angle starting from which edges are highlighted (in degrees) | `89°` |
 | **Use Angle Gradient** (`MESHCHECK_USE_GRADIENT`) | Smooth color transition from yellow to red | `On` |
 | **Edge Color** (`MESHCHECK_EDGE_COLOR`) | Solid color (when gradient is disabled) | Orange-Red |
 | **Color at Min Angle** (`MESHCHECK_COLOR_MIN`) | Edge color at the minimum angle threshold | Yellow / Amber |
 | **180° Color** (`MESHCHECK_COLOR_MAX`) | Edge color at maximum angle / inverted normals | Bright Red |
+| **Highlight Hard Edges** (`MESHCHECK_SHOW_HARD_EDGES`) | Highlight Phong breaks and split normals | `On` |
+| **Include Phong Tag Angle** (`MESHCHECK_HARD_PHONG_ANGLE`) | Include edges exceeding the Phong tag's angle limit | `On` |
+| **Hard Edge Color** (`MESHCHECK_HARD_EDGE_COLOR`) | Viewport color for hard edges | Dodger Blue |
+| **Highlight UV Seams** (`MESHCHECK_SHOW_UV_SEAMS`) | Highlight UV island seams / chart borders | `On` |
+| **UV Seam Color** (`MESHCHECK_UV_SEAM_COLOR`) | Viewport color for UV seams | Lime Green |
+| **Distinct Color for Hard + Seam** (`MESHCHECK_SHOW_HARD_SEAM_DIFF`) | Use distinct color when edge is both Hard and UV Seam | `On` |
+| **Hard & UV Seam Color** (`MESHCHECK_HARD_SEAM_COLOR`) | Color when an edge is both a Hard Edge and UV Seam | Purple |
 | **Highlight Boundary Edges** (`MESHCHECK_SHOW_BOUNDARY`) | Enable display of open mesh boundary edges | `Off` |
 | **Boundary Color** (`MESHCHECK_BOUNDARY_COLOR`) | Color of open mesh boundary edges | Cyan |
-| **Status** (`MESHCHECK_INFO_COUNT`) | Count of detected problematic and boundary edges | Info string |
+| **Status** (`MESHCHECK_INFO_COUNT`) | Real-time counts of angle, hard, UV seam, and boundary edges | Info string |
 
 ---
 
 ## Installation
 
-1. Download the release package: [`C4D_MeshCheck_v1.0.0.zip`](C4D_MeshCheck_v1.0.0.zip).
+1. Download the release package: [`C4D_MeshCheck_v1.0.1.zip`](C4D_MeshCheck_v1.0.1.zip).
 2. Extract the folder corresponding to your Cinema 4D version (`2025` or `2026`) into your Cinema 4D `plugins` directory:
    - **Windows:** `C:\Program Files\Maxon Cinema 4D 2026\plugins\C4D_MeshCheck`
    - *Or your custom plugins path configured in Preferences → Plugins.*

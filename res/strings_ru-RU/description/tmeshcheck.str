@@ -2,14 +2,22 @@ STRINGTABLE Tmeshcheck
 {
     Tmeshcheck                  "Тег MeshCheck";
     MESHCHECK_ENABLED           "Включить подсветку";
-    MESHCHECK_ANGLE_THRESHOLD   "Подсвечивать от угла";
-    MESHCHECK_EDGE_WIDTH        "Толщина линии";
-    MESHCHECK_DEPTH_TEST        "Тест глубины (скрывать за мешем)";
-    MESHCHECK_USE_GRADIENT      "Градиент по углу";
-    MESHCHECK_EDGE_COLOR        "Цвет рёбер";
-    MESHCHECK_COLOR_MIN         "Цвет мин. угла";
-    MESHCHECK_COLOR_MAX         "Цвет на 180°";
-    MESHCHECK_SHOW_BOUNDARY     "Подсвечивать граничные рёбра";
-    MESHCHECK_BOUNDARY_COLOR    "Цвет границы";
-    MESHCHECK_INFO_COUNT        "Статус";
+    MESHCHECK_SHOW_ANGLE              "Подсвечивать по углу";
+    MESHCHECK_ANGLE_THRESHOLD         "Подсвечивать от угла";
+    MESHCHECK_EDGE_WIDTH              "Толщина линии";
+    MESHCHECK_DEPTH_TEST              "Тест глубины (скрывать за мешем)";
+    MESHCHECK_USE_GRADIENT            "Градиент по углу";
+    MESHCHECK_EDGE_COLOR              "Цвет рёбер";
+    MESHCHECK_COLOR_MIN               "Цвет мин. угла";
+    MESHCHECK_COLOR_MAX               "Цвет на 180°";
+    MESHCHECK_SHOW_HARD_EDGES         "Подсвечивать Hard Edges";
+    MESHCHECK_HARD_PHONG_ANGLE        "Учитывать угол тега Phong";
+    MESHCHECK_HARD_EDGE_COLOR         "Цвет Hard Edges";
+    MESHCHECK_SHOW_UV_SEAMS           "Подсвечивать швы UV";
+    MESHCHECK_UV_SEAM_COLOR           "Цвет швов UV";
+    MESHCHECK_SHOW_HARD_SEAM_DIFF     "Особый цвет для Hard + UV шов";
+    MESHCHECK_HARD_SEAM_COLOR         "Цвет Hard & UV шва";
+    MESHCHECK_SHOW_BOUNDARY           "Подсвечивать граничные рёбра";
+    MESHCHECK_BOUNDARY_COLOR          "Цвет границы";
+    MESHCHECK_INFO_COUNT              "Статус";
 }

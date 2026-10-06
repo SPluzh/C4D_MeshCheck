@@ -2,14 +2,22 @@ STRINGTABLE Tmeshcheck
 {
     Tmeshcheck                  "MeshCheck Tag";
     MESHCHECK_ENABLED           "Enable Highlighting";
-    MESHCHECK_ANGLE_THRESHOLD   "Highlight from Angle";
-    MESHCHECK_EDGE_WIDTH        "Line Width";
-    MESHCHECK_DEPTH_TEST        "Depth Test (Occlusion)";
-    MESHCHECK_USE_GRADIENT      "Use Angle Gradient";
-    MESHCHECK_EDGE_COLOR        "Edge Color";
-    MESHCHECK_COLOR_MIN         "Color at Min Angle";
-    MESHCHECK_COLOR_MAX         "Color at 180 deg";
-    MESHCHECK_SHOW_BOUNDARY     "Highlight Boundary Edges";
-    MESHCHECK_BOUNDARY_COLOR    "Boundary Color";
-    MESHCHECK_INFO_COUNT        "Status";
+    MESHCHECK_SHOW_ANGLE              "Highlight by Angle";
+    MESHCHECK_ANGLE_THRESHOLD         "Highlight from Angle";
+    MESHCHECK_EDGE_WIDTH              "Line Width";
+    MESHCHECK_DEPTH_TEST              "Depth Test (Occlusion)";
+    MESHCHECK_USE_GRADIENT            "Use Angle Gradient";
+    MESHCHECK_EDGE_COLOR              "Edge Color";
+    MESHCHECK_COLOR_MIN               "Color at Min Angle";
+    MESHCHECK_COLOR_MAX               "Color at 180 deg";
+    MESHCHECK_SHOW_HARD_EDGES         "Highlight Hard Edges";
+    MESHCHECK_HARD_PHONG_ANGLE        "Include Phong Tag Angle";
+    MESHCHECK_HARD_EDGE_COLOR         "Hard Edge Color";
+    MESHCHECK_SHOW_UV_SEAMS           "Highlight UV Seams";
+    MESHCHECK_UV_SEAM_COLOR           "UV Seam Color";
+    MESHCHECK_SHOW_HARD_SEAM_DIFF     "Distinct Color for Hard + Seam";
+    MESHCHECK_HARD_SEAM_COLOR         "Hard & UV Seam Color";
+    MESHCHECK_SHOW_BOUNDARY           "Highlight Boundary Edges";
+    MESHCHECK_BOUNDARY_COLOR          "Boundary Color";
+    MESHCHECK_INFO_COUNT              "Status";
 }

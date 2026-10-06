@@ -1,6 +1,8 @@
 #include "meshcheck_tag.h"
 #include "c4d_symbols.h"
 #include "description/tmeshcheck.h"
+#include "description/tphong.h"
+#include "c4d_painter.h"
 
 namespace cinema
 {
@@ -9,7 +11,17 @@ struct EdgePolys
 {
     Int32 poly0 = NOTOK;
     Int32 poly1 = NOTOK;
+    Int32 edgeIndex0 = NOTOK;
+    Int32 edgeIndex1 = NOTOK;
     Int32 polyCount = 0;
+    Vector uv0_v0 = Vector(0.0);
+    Vector uv0_v1 = Vector(0.0);
+    Vector uv1_v0 = Vector(0.0);
+    Vector uv1_v1 = Vector(0.0);
+    Vector nrm0_v0 = Vector(0.0);
+    Vector nrm0_v1 = Vector(0.0);
+    Vector nrm1_v0 = Vector(0.0);
+    Vector nrm1_v1 = Vector(0.0);
 };
 
 Bool MeshCheckTagData::Init(GeListNode* node, Bool isCloneInit)
@@ -22,15 +34,34 @@ Bool MeshCheckTagData::Init(GeListNode* node, Bool isCloneInit)
     if (!isCloneInit)
     {
         data->SetBool(MESHCHECK_ENABLED, true);
-        data->SetFloat(MESHCHECK_ANGLE_THRESHOLD, DegToRad(89.0));
         data->SetFloat(MESHCHECK_EDGE_WIDTH, 2.5);
         data->SetBool(MESHCHECK_DEPTH_TEST, true);
+
+        // Dihedral angle
+        data->SetBool(MESHCHECK_SHOW_ANGLE, true);
+        data->SetFloat(MESHCHECK_ANGLE_THRESHOLD, DegToRad(89.0));
         data->SetBool(MESHCHECK_USE_GRADIENT, true);
         data->SetVector(MESHCHECK_EDGE_COLOR, Vector(1.0, 0.2, 0.0));
         data->SetVector(MESHCHECK_COLOR_MIN, Vector(1.0, 0.85, 0.0));
         data->SetVector(MESHCHECK_COLOR_MAX, Vector(1.0, 0.05, 0.05));
+
+        // Hard edges
+        data->SetBool(MESHCHECK_SHOW_HARD_EDGES, true);
+        data->SetBool(MESHCHECK_HARD_PHONG_ANGLE, true);
+        data->SetVector(MESHCHECK_HARD_EDGE_COLOR, Vector(0.15, 0.55, 1.0));
+
+        // UV seams
+        data->SetBool(MESHCHECK_SHOW_UV_SEAMS, true);
+        data->SetVector(MESHCHECK_UV_SEAM_COLOR, Vector(0.2, 0.85, 0.3));
+
+        // Combined Hard & UV seam
+        data->SetBool(MESHCHECK_SHOW_HARD_SEAM_DIFF, true);
+        data->SetVector(MESHCHECK_HARD_SEAM_COLOR, Vector(0.7, 0.25, 0.95));
+
+        // Boundary
         data->SetBool(MESHCHECK_SHOW_BOUNDARY, false);
         data->SetVector(MESHCHECK_BOUNDARY_COLOR, Vector(0.0, 0.75, 1.0));
+
         data->SetString(MESHCHECK_INFO_COUNT, "Ready"_s);
     }
 
@@ -62,19 +93,44 @@ Bool MeshCheckTagData::GetDEnabling(const GeListNode* node, const DescID& id, co
         return false;
 
     const Int32 paramId = id[0].id;
-    const Bool useGradient = bc->GetBool(MESHCHECK_USE_GRADIENT, true);
-    const Bool showBoundary = bc->GetBool(MESHCHECK_SHOW_BOUNDARY, false);
     const Bool isEnabled = bc->GetBool(MESHCHECK_ENABLED, true);
 
     if (paramId != MESHCHECK_ENABLED && !isEnabled)
         return false;
 
+    const Bool showAngle = bc->GetBool(MESHCHECK_SHOW_ANGLE, true);
+    const Bool useGradient = bc->GetBool(MESHCHECK_USE_GRADIENT, true);
+    const Bool showHardEdges = bc->GetBool(MESHCHECK_SHOW_HARD_EDGES, true);
+    const Bool showUVSeams = bc->GetBool(MESHCHECK_SHOW_UV_SEAMS, true);
+    const Bool showHardSeamDiff = bc->GetBool(MESHCHECK_SHOW_HARD_SEAM_DIFF, true);
+    const Bool showBoundary = bc->GetBool(MESHCHECK_SHOW_BOUNDARY, false);
+
+    // Dihedral Angle parameters
+    if (paramId == MESHCHECK_ANGLE_THRESHOLD || paramId == MESHCHECK_USE_GRADIENT)
+        return showAngle;
+
     if (paramId == MESHCHECK_COLOR_MIN || paramId == MESHCHECK_COLOR_MAX)
-        return useGradient;
+        return showAngle && useGradient;
 
     if (paramId == MESHCHECK_EDGE_COLOR)
-        return !useGradient;
+        return showAngle && !useGradient;
 
+    // Hard Edges parameters
+    if (paramId == MESHCHECK_HARD_PHONG_ANGLE || paramId == MESHCHECK_HARD_EDGE_COLOR)
+        return showHardEdges;
+
+    // UV Seams parameters
+    if (paramId == MESHCHECK_UV_SEAM_COLOR)
+        return showUVSeams;
+
+    // Combined Hard + Seams parameters
+    if (paramId == MESHCHECK_SHOW_HARD_SEAM_DIFF)
+        return showHardEdges && showUVSeams;
+
+    if (paramId == MESHCHECK_HARD_SEAM_COLOR)
+        return showHardEdges && showUVSeams && showHardSeamDiff;
+
+    // Boundary parameters
     if (paramId == MESHCHECK_BOUNDARY_COLOR)
         return showBoundary;
 
@@ -137,10 +193,14 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
         return;
 
     const Bool enabled = data->GetBool(MESHCHECK_ENABLED, true);
+    const Bool showAngle = data->GetBool(MESHCHECK_SHOW_ANGLE, true);
     Float thresholdRad = data->GetFloat(MESHCHECK_ANGLE_THRESHOLD, DegToRad(89.0));
     if (thresholdRad > maxon::PI)
         thresholdRad = DegToRad(thresholdRad);
     const Float thresholdDeg = RadToDeg(thresholdRad);
+    const Bool showHardEdges = data->GetBool(MESHCHECK_SHOW_HARD_EDGES, true);
+    const Bool hardIncludePhongAngle = data->GetBool(MESHCHECK_HARD_PHONG_ANGLE, true);
+    const Bool showUVSeams = data->GetBool(MESHCHECK_SHOW_UV_SEAMS, true);
     const Bool showBoundary = data->GetBool(MESHCHECK_SHOW_BOUNDARY, false);
 
     if (!enabled)
@@ -150,6 +210,8 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
         m_lastEnabled = false;
         m_problemEdgeCount = 0;
         m_boundaryEdgeCount = 0;
+        m_hardEdgeCount = 0;
+        m_uvSeamCount = 0;
         return;
     }
 
@@ -159,18 +221,35 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
         m_highlightEdges.Reset();
         m_problemEdgeCount = 0;
         m_boundaryEdgeCount = 0;
+        m_hardEdgeCount = 0;
+        m_uvSeamCount = 0;
         return;
     }
 
-    const UInt64 dirtyChecksum = polyOp->GetDirty(DIRTYFLAGS::DATA);
     const Int32 pointCount = polyOp->GetPointCount();
     const Int32 polyCount = polyOp->GetPolygonCount();
+
+    const UVWTag* uvwTag = static_cast<const UVWTag*>(polyOp->GetTag(Tuvw));
+    const BaseTag* phongTag = polyOp->GetTag(Tphong);
+    const NormalTag* normalTag = static_cast<const NormalTag*>(polyOp->GetTag(Tnormal));
+
+    UInt64 dirtyChecksum = UInt64(polyOp->GetDirty(DIRTYFLAGS::DATA | DIRTYFLAGS::SELECT));
+    if (uvwTag)
+        dirtyChecksum ^= (UInt64(uvwTag->GetDirty(DIRTYFLAGS::DATA)) << 11);
+    if (phongTag)
+        dirtyChecksum ^= (UInt64(phongTag->GetDirty(DIRTYFLAGS::DATA)) << 23);
+    if (normalTag)
+        dirtyChecksum ^= (UInt64(normalTag->GetDirty(DIRTYFLAGS::DATA)) << 35);
 
     if (!forceRecalculate &&
         dirtyChecksum == m_lastDirtyChecksum &&
         pointCount == m_lastPointCount &&
         polyCount == m_lastPolyCount &&
         Abs(thresholdDeg - m_lastThreshold) < 0.01 &&
+        showAngle == m_lastShowAngle &&
+        showHardEdges == m_lastShowHardEdges &&
+        hardIncludePhongAngle == m_lastHardIncludePhongAngle &&
+        showUVSeams == m_lastShowUVSeams &&
         showBoundary == m_lastShowBoundary &&
         enabled == m_lastEnabled)
     {
@@ -181,12 +260,18 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
     m_lastPointCount = pointCount;
     m_lastPolyCount = polyCount;
     m_lastThreshold = thresholdDeg;
+    m_lastShowAngle = showAngle;
+    m_lastShowHardEdges = showHardEdges;
+    m_lastHardIncludePhongAngle = hardIncludePhongAngle;
+    m_lastShowUVSeams = showUVSeams;
     m_lastShowBoundary = showBoundary;
     m_lastEnabled = enabled;
 
     m_highlightEdges.Reset();
     m_problemEdgeCount = 0;
     m_boundaryEdgeCount = 0;
+    m_hardEdgeCount = 0;
+    m_uvSeamCount = 0;
 
     if (pointCount < 2 || polyCount < 1)
         return;
@@ -207,7 +292,29 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
         polyNormals[i] = CalcPolyNormal(points, polys[i]);
     }
 
-    // 2. Build edge-to-polygons map using 64-bit packed vertex indices
+    // 2. Query UV, Phong, Normal data handles
+    ConstUVWHandle uvData = uvwTag ? uvwTag->GetDataAddressR() : nullptr;
+    ConstNormalHandle normalData = normalTag ? normalTag->GetDataAddressR() : nullptr;
+
+    const EdgeBaseSelect* phongBreaks = polyOp->GetPhongBreak();
+    const Bool hasPhongBreaks = (phongBreaks != nullptr && phongBreaks->GetCount() > 0);
+
+    Bool phongAngleLimit = false;
+    Float phongAngleDeg = 40.0;
+    if (phongTag)
+    {
+        const BaseContainer* pbc = phongTag->GetDataInstance();
+        if (pbc)
+        {
+            phongAngleLimit = pbc->GetBool(PHONGTAG_PHONG_ANGLELIMIT, false);
+            phongAngleDeg = RadToDeg(pbc->GetFloat(PHONGTAG_PHONG_ANGLE, DegToRad(40.0)));
+        }
+    }
+
+    const EdgeBaseSelect* uvSeamsSel = GetUVSeams2(polyOp, false);
+    const Bool hasUVSeamsSel = (uvSeamsSel != nullptr && uvSeamsSel->GetCount() > 0);
+
+    // 3. Build edge-to-polygons map using 64-bit packed vertex indices
     maxon::HashMap<UInt64, EdgePolys> edgeMap;
 
     for (Int32 i = 0; i < polyCount; ++i)
@@ -215,6 +322,18 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
         const CPolygon& p = polys[i];
         const Int32 v[4] = { p.a, p.b, p.c, p.d };
         const Int32 numSides = (p.c == p.d) ? 3 : 4;
+
+        UVWStruct uvw;
+        if (uvData != nullptr)
+        {
+            UVWTag::Get(uvData, i, uvw);
+        }
+
+        NormalStruct nrm;
+        if (normalData != nullptr)
+        {
+            NormalTag::Get(normalData, i, nrm);
+        }
 
         for (Int32 e = 0; e < numSides; ++e)
         {
@@ -227,24 +346,53 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
             const Int32 v1 = Max(va, vb);
             const UInt64 key = (UInt64(UInt32(v0)) << 32) | UInt64(UInt32(v1));
 
+            // Cinema 4D edge index: for triangles, edge from c to a is index 3
+            const Int32 c4dEdgeIndex = (numSides == 3 && e == 2) ? 3 : e;
+
+            Vector uv_v0(0.0), uv_v1(0.0);
+            if (uvData != nullptr)
+            {
+                uv_v0 = (va == v0) ? uvw[e] : uvw[(e + 1) % numSides];
+                uv_v1 = (va == v1) ? uvw[e] : uvw[(e + 1) % numSides];
+            }
+
+            Vector nrm_v0(0.0), nrm_v1(0.0);
+            if (normalData != nullptr)
+            {
+                nrm_v0 = (va == v0) ? nrm[e] : nrm[(e + 1) % numSides];
+                nrm_v1 = (va == v1) ? nrm[e] : nrm[(e + 1) % numSides];
+            }
+
             auto* entry = edgeMap.Find(key);
             if (entry)
             {
                 if (entry->GetValue().polyCount == 1)
+                {
                     entry->GetValue().poly1 = i;
+                    entry->GetValue().edgeIndex1 = c4dEdgeIndex;
+                    entry->GetValue().uv1_v0 = uv_v0;
+                    entry->GetValue().uv1_v1 = uv_v1;
+                    entry->GetValue().nrm1_v0 = nrm_v0;
+                    entry->GetValue().nrm1_v1 = nrm_v1;
+                }
                 entry->GetValue().polyCount++;
             }
             else
             {
                 EdgePolys newEntry;
                 newEntry.poly0 = i;
+                newEntry.edgeIndex0 = c4dEdgeIndex;
                 newEntry.polyCount = 1;
+                newEntry.uv0_v0 = uv_v0;
+                newEntry.uv0_v1 = uv_v1;
+                newEntry.nrm0_v0 = nrm_v0;
+                newEntry.nrm0_v1 = nrm_v1;
                 edgeMap.Insert(key, newEntry) iferr_ignore("insert edge");
             }
         }
     }
 
-    // 3. Scan all edges and check angle or boundary status
+    // 4. Scan all edges and check angle, hard edges, uv seams, boundary, or non-manifold
     for (const auto& entry : edgeMap)
     {
         const UInt64 key = entry.GetKey();
@@ -260,7 +408,59 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
             dot = ClampValue(dot, -1.0, 1.0);
             Float angleDeg = RadToDeg(ACos(dot));
 
-            if (angleDeg >= thresholdDeg)
+            Bool isAngle = false;
+            if (showAngle && angleDeg >= thresholdDeg)
+            {
+                isAngle = true;
+                m_problemEdgeCount++;
+            }
+
+            Bool isHard = false;
+            if (showHardEdges)
+            {
+                if (hasPhongBreaks && (phongBreaks->IsSelected(4 * ep.poly0 + ep.edgeIndex0) || phongBreaks->IsSelected(4 * ep.poly1 + ep.edgeIndex1)))
+                {
+                    isHard = true;
+                }
+                else if (normalData != nullptr)
+                {
+                    Float d0 = Dot(ep.nrm0_v0, ep.nrm1_v0);
+                    Float d1 = Dot(ep.nrm0_v1, ep.nrm1_v1);
+                    if (d0 < 0.999 || d1 < 0.999)
+                        isHard = true;
+                }
+                else if (hardIncludePhongAngle && phongTag && phongAngleLimit)
+                {
+                    if (angleDeg >= phongAngleDeg)
+                        isHard = true;
+                }
+
+                if (isHard)
+                    m_hardEdgeCount++;
+            }
+
+            Bool isSeam = false;
+            if (showUVSeams)
+            {
+                if (hasUVSeamsSel && (uvSeamsSel->IsSelected(4 * ep.poly0 + ep.edgeIndex0) || uvSeamsSel->IsSelected(4 * ep.poly1 + ep.edgeIndex1)))
+                {
+                    isSeam = true;
+                }
+                else if (uvData != nullptr)
+                {
+                    Float du0 = Abs(ep.uv0_v0.x - ep.uv1_v0.x);
+                    Float dv0 = Abs(ep.uv0_v0.y - ep.uv1_v0.y);
+                    Float du1 = Abs(ep.uv0_v1.x - ep.uv1_v1.x);
+                    Float dv1 = Abs(ep.uv0_v1.y - ep.uv1_v1.y);
+                    if (du0 > 1e-4 || dv0 > 1e-4 || du1 > 1e-4 || dv1 > 1e-4)
+                        isSeam = true;
+                }
+
+                if (isSeam)
+                    m_uvSeamCount++;
+            }
+
+            if (isAngle || isHard || isSeam)
             {
                 HighlightEdge he;
                 he.v0 = v0;
@@ -268,8 +468,10 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
                 he.angle = angleDeg;
                 he.isBoundary = false;
                 he.isNonManifold = false;
-                m_highlightEdges.Append(he) iferr_ignore("append problem edge");
-                m_problemEdgeCount++;
+                he.isAngleProblem = isAngle;
+                he.isHardEdge = isHard;
+                he.isUVSeam = isSeam;
+                m_highlightEdges.Append(he) iferr_ignore("append highlight edge");
             }
         }
         else if (ep.polyCount == 1)
@@ -283,6 +485,9 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
                 he.angle = 0.0;
                 he.isBoundary = true;
                 he.isNonManifold = false;
+                he.isAngleProblem = false;
+                he.isHardEdge = false;
+                he.isUVSeam = false;
                 m_highlightEdges.Append(he) iferr_ignore("append boundary edge");
             }
         }
@@ -295,13 +500,17 @@ void MeshCheckTagData::UpdateMeshEdges(BaseTag* tag, BaseObject* op, Bool forceR
             he.angle = 180.0;
             he.isBoundary = false;
             he.isNonManifold = true;
+            he.isAngleProblem = false;
+            he.isHardEdge = false;
+            he.isUVSeam = false;
             m_highlightEdges.Append(he) iferr_ignore("append nonmanifold edge");
             m_problemEdgeCount++;
         }
     }
 
-    // 4. Update status display string in tag properties
-    String infoStr = FormatString("Problem edges: @ | Boundary: @"_s, m_problemEdgeCount, m_boundaryEdgeCount);
+    // 5. Update status display string in tag properties
+    String infoStr = FormatString("Angle: @ | Hard: @ | UV: @ | Boundary: @"_s,
+        m_problemEdgeCount, m_hardEdgeCount, m_uvSeamCount, m_boundaryEdgeCount);
     tag->SetParameter(ConstDescID(DescLevel(MESHCHECK_INFO_COUNT)), GeData(infoStr), DESCFLAGS_SET::NONE);
 }
 
@@ -345,6 +554,7 @@ Bool MeshCheckTagData::Draw(BaseTag* tag, BaseObject* op, BaseDraw* bd, BaseDraw
     if (!points)
         return true;
 
+    const Bool showAngle = data->GetBool(MESHCHECK_SHOW_ANGLE, true);
     Float thresholdRad = data->GetFloat(MESHCHECK_ANGLE_THRESHOLD, DegToRad(89.0));
     if (thresholdRad > maxon::PI)
         thresholdRad = DegToRad(thresholdRad);
@@ -358,6 +568,16 @@ Bool MeshCheckTagData::Draw(BaseTag* tag, BaseObject* op, BaseDraw* bd, BaseDraw
     const Vector colMin = data->GetVector(MESHCHECK_COLOR_MIN, Vector(1.0, 0.85, 0.0));
     const Vector colMax = data->GetVector(MESHCHECK_COLOR_MAX, Vector(1.0, 0.05, 0.05));
     const Bool depthTest = data->GetBool(MESHCHECK_DEPTH_TEST, true);
+
+    const Bool showHardEdges = data->GetBool(MESHCHECK_SHOW_HARD_EDGES, true);
+    const Vector hardEdgeColor = data->GetVector(MESHCHECK_HARD_EDGE_COLOR, Vector(0.15, 0.55, 1.0));
+
+    const Bool showUVSeams = data->GetBool(MESHCHECK_SHOW_UV_SEAMS, true);
+    const Vector uvSeamColor = data->GetVector(MESHCHECK_UV_SEAM_COLOR, Vector(0.2, 0.85, 0.3));
+
+    const Bool showHardSeamDiff = data->GetBool(MESHCHECK_SHOW_HARD_SEAM_DIFF, true);
+    const Vector hardSeamColor = data->GetVector(MESHCHECK_HARD_SEAM_COLOR, Vector(0.7, 0.25, 0.95));
+
     const Vector boundaryColor = data->GetVector(MESHCHECK_BOUNDARY_COLOR, Vector(0.0, 0.75, 1.0));
 
     bd->SetMatrix_Matrix(nullptr, Matrix());
@@ -428,15 +648,36 @@ Bool MeshCheckTagData::Draw(BaseTag* tag, BaseObject* op, BaseDraw* bd, BaseDraw
         }
         else
         {
-            Vector col = edgeColor;
-            if (useGradient)
+            Vector col;
+            if (he.isHardEdge && he.isUVSeam && showHardEdges && showUVSeams && showHardSeamDiff)
             {
-                Float t = 0.0;
-                if (thresholdDeg < 180.0)
-                    t = (he.angle - thresholdDeg) / (180.0 - thresholdDeg);
-                t = ClampValue(t, 0.0, 1.0);
-                col = (1.0 - t) * colMin + t * colMax;
+                col = hardSeamColor;
             }
+            else if (he.isHardEdge && showHardEdges)
+            {
+                col = hardEdgeColor;
+            }
+            else if (he.isUVSeam && showUVSeams)
+            {
+                col = uvSeamColor;
+            }
+            else if (he.isAngleProblem && showAngle)
+            {
+                col = edgeColor;
+                if (useGradient)
+                {
+                    Float t = 0.0;
+                    if (thresholdDeg < 180.0)
+                        t = (he.angle - thresholdDeg) / (180.0 - thresholdDeg);
+                    t = ClampValue(t, 0.0, 1.0);
+                    col = (1.0 - t) * colMin + t * colMax;
+                }
+            }
+            else
+            {
+                continue;
+            }
+
             drawThickLine(p0, p1, col, lineWidth);
         }
     }
