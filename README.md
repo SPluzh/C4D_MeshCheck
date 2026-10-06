@@ -1,68 +1,48 @@
 # C4D_MeshCheck
 
-C++ плагин для **Cinema 4D (SDK 2026)**, обеспечивающий интерактивную подсветку проблемных рёбер меша прямо во вьюпорте в реальном времени.
+A C++ plugin for **Cinema 4D (SDK 2026)** providing real-time interactive viewport highlighting of problematic mesh edges.
 
-Ориентирован на проверку топологии и поиск критических изломов/складок (углы между смежными полигонами больше 89° или настраиваемого порога), аналогично стандартному механизму Mesh Checking Cinema 4D.
-
----
-
-## Возможности
-
-- **Интерактивная подсветка во вьюпорте (Tag & Command)**:
-  - Тег `MeshCheck` можно повесить на любой полигональный объект (или объект с деформерами / генераторами).
-  - Команда в меню/палитре `Toggle MeshCheck Tag` — переключает или вешает тег на выделенный объект в один клик.
-- **Анализ угла между полигонами (Edge Angle)**:
-  - Автоматическое вычисление нормалей (метод Ньюэлла для треугольников и произвольных 3D-квадов).
-  - Сравнение угла смежных полигонов с порогом (по умолчанию **89°**).
-  - Подсветка рёбер, угол между нормалями которых превышает порог.
-- **Цветовой градиент**:
-  - Плавная интерполяция цвета от желтого/янтарного (на границе порога 89°) до ярко-красного (при приближении к 180° / развороту нормалей).
-  - Возможность задать фиксированный цвет вместо градиента.
-- **Контроль толщины линий и глубина (Depth Test)**:
-  - Многопроходная отрисовка линий в экранном пространстве с субпиксельным сглаживанием и настраиваемой толщиной (1–10 px).
-  - Тест глубины (`Depth Test` / `DRAW_Z_LOWEREQUAL`) с Z-смещением (`LineZOffset`), исключающий Z-fighting и скрывающий обратные невидимые рёбра за мешем.
-- **Подсветка граничных рёбер (Boundary Edges)**:
-  - Опциональная подсветка открытых краёв сетки (рёбра, принадлежащие только 1 полигону).
-- **Поддержка нетривиальной топологии**:
-  - Корректная обработка non-manifold рёбер (более 2 полигонов на ребро).
-- **Высокая производительность (60+ FPS)**:
-  - Индексация рёбер через упакованные 64-битные ключи в `maxon::HashMap`.
-  - Умное кэширование: пересчёт геометрии происходит только при изменении контрольной суммы (`DIRTYFLAGS::DATA`), изменении числа вершин/полигонов или параметров тега.
+Designed for topology validation and detecting critical creases/creasing angles (angles between adjacent polygons exceeding 89° or a configurable threshold), similar to Cinema 4D's native Mesh Checking system.
 
 ---
 
-## Параметры тега (Attribute Manager)
+## Features
 
-| Параметр | Описание | Значение по умолчанию |
+- **Interactive Viewport Highlighting (Tag & Command)**:
+  - The `MeshCheck` tag can be applied to any polygon object (or generator / deformer objects).
+  - A menu / palette command `Toggle MeshCheck Tag` toggles or applies the tag to the selected object with a single click.
+- **Polygon Angle Analysis (Edge Angle)**:
+  - Automatic normal calculation (Newell's method for triangles and non-planar 3D quads).
+  - Compares adjacent face normal angles against a threshold (default: **89°**).
+  - Highlights edges whose dihedral angle between face normals exceeds the threshold.
+- **Color Gradient**:
+  - Smooth color interpolation from yellow/amber (at the 89° threshold) to bright red (approaching 180° / flipped normals).
+  - Option to set a solid color instead of a gradient.
+- **Line Width Control & Depth Testing**:
+  - Multi-pass screen-space line rendering with subpixel antialiasing and configurable line thickness (1–10 px).
+  - Depth testing (`DRAW_Z_LOWEREQUAL`) with a line Z-offset (`LineZOffset`) to eliminate Z-fighting and occlude back-facing edges behind the mesh.
+- **Boundary Edge Highlighting**:
+  - Optional highlighting of open mesh borders (edges belonging to only one polygon).
+- **Non-Manifold Topology Support**:
+  - Proper handling of non-manifold edges (more than two polygons sharing an edge).
+- **High Performance (60+ FPS)**:
+  - Edge indexing via packed 64-bit keys in `maxon::HashMap`.
+  - Smart caching: geometry recalculation occurs only when dirty checksums change (`DIRTYFLAGS::DATA`), vertex/polygon counts change, or tag parameters are modified.
+
+---
+
+## Tag Parameters (Attribute Manager)
+
+| Parameter | Description | Default Value |
 |---|---|---|
-| **Включить подсветку** (`MESHCHECK_ENABLED`) | Включение/отключение отображения линий вьюпорта | `Вкл` |
-| **Порог угла** (`MESHCHECK_ANGLE_THRESHOLD`) | Угол между полигонами в градусах | `89°` |
-| **Толщина линии** (`MESHCHECK_EDGE_WIDTH`) | Толщина отрисовки линий во вьюпорте | `2.5 px` |
-| **Тест глубины** (`MESHCHECK_DEPTH_TEST`) | Скрывать рёбра за геометрией (учёт Z-буфера) | `Вкл` |
-| **Градиент по углу** (`MESHCHECK_USE_GRADIENT`) | Плавный переход цвета от желтого к красному | `Вкл` |
-| **Цвет рёбер** (`MESHCHECK_EDGE_COLOR`) | Фиксированный цвет (при выключенном градиенте) | Оранжево-красный |
-| **Цвет на пороге** (`MESHCHECK_COLOR_MIN`) | Цвет рёбер на минимальном пороге угла | Жёлтый / Amber |
-| **Цвет на 180°** (`MESHCHECK_COLOR_MAX`) | Цвет рёбер на максимальном угле / перевёрнутых нормалях | Ярко-красный |
-| **Подсвечивать граничные рёбра** (`MESHCHECK_SHOW_BOUNDARY`) | Включить показ открытых краёв меша | `Выкл` |
-| **Цвет границы** (`MESHCHECK_BOUNDARY_COLOR`) | Цвет граничных рёбер | Cyan / Голубой |
-| **Статус** (`MESHCHECK_INFO_COUNT`) | Количество найденных проблемных и граничных рёбер | Информационная строка |
-
----
-
-## Сборка и развертывание
-
-### Сборка
-Запустите [build_2026.bat](file:///c:/Users/user/Desktop/cpp/C4D_MeshCheck/build_2026.bat) или выполните:
-```powershell
-powershell -ExecutionPolicy Bypass -File .\build_2026.ps1
-```
-
-Бинарник компилируется в:
-`sdk_2026\build\bin\Release\plugins\C4D_MeshCheck\C4D_MeshCheck.xdl64`
-
-### Деплой
-Запустите [deploy_2026.bat](file:///c:/Users/user/Desktop/cpp/C4D_MeshCheck/deploy_2026.bat) или выполните:
-```powershell
-powershell -ExecutionPolicy Bypass -File .\deploy_2026.ps1
-```
-Плагин будет скопирован в общую папку Cinema 4D (`\\vmware-host\Shared Folders\plugins\C4D_MeshCheck`).
+| **Enable Highlighting** (`MESHCHECK_ENABLED`) | Enable or disable viewport line display | `On` |
+| **Angle Threshold** (`MESHCHECK_ANGLE_THRESHOLD`) | Angle between polygons in degrees | `89°` |
+| **Line Width** (`MESHCHECK_EDGE_WIDTH`) | Viewport line rendering thickness | `2.5 px` |
+| **Depth Test** (`MESHCHECK_DEPTH_TEST`) | Occlude edges behind geometry (Z-buffer test) | `On` |
+| **Angle Gradient** (`MESHCHECK_USE_GRADIENT`) | Smooth color transition from yellow to red | `On` |
+| **Edge Color** (`MESHCHECK_EDGE_COLOR`) | Solid color (when gradient is disabled) | Orange-Red |
+| **Threshold Color** (`MESHCHECK_COLOR_MIN`) | Edge color at the minimum angle threshold | Yellow / Amber |
+| **180° Color** (`MESHCHECK_COLOR_MAX`) | Edge color at maximum angle / inverted normals | Bright Red |
+| **Show Boundary Edges** (`MESHCHECK_SHOW_BOUNDARY`) | Enable display of open mesh boundary edges | `Off` |
+| **Boundary Color** (`MESHCHECK_BOUNDARY_COLOR`) | Color of boundary edges | Cyan |
+| **Status** (`MESHCHECK_INFO_COUNT`) | Number of detected problematic and boundary edges | Info string |
