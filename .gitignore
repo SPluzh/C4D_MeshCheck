@@ -14,18 +14,6 @@ CMakeCache.txt
 *.cmake
 install/
 
-# SDK Folders: Ignore everything EXCEPT our configuration files and project file
-sdk_2026/*
-!sdk_2026/CMakeLists.txt
-!sdk_2026/custom_paths.txt
-!sdk_2026/CMakePresets.json
-!sdk_2026/build/
-sdk_2026/build/*
-!sdk_2026/build/C4D_MeshCheck/
-sdk_2026/build/C4D_MeshCheck/*
-!sdk_2026/build/C4D_MeshCheck/project/
-sdk_2026/build/C4D_MeshCheck/project/*
-!sdk_2026/build/C4D_MeshCheck/project/C4D_MeshCheck.vcxproj
 
 # Cinema 4D / Maxon
 *.pdb
@@ -56,6 +44,7 @@ walkthrough.md
 
 # Release Artifacts
 *.zip
+dist_staging/
 
 # Crash Reports
 _BugReport*.txt

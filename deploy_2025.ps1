@@ -1,7 +1,8 @@
-$source = "C:\Users\user\Desktop\cpp\C4D_SDK\sdk_2026\build\bin\Release\plugins\C4D_MeshCheck"
+$source = "C:\Users\user\Desktop\cpp\C4D_SDK\sdk_2025\build\bin\Release\plugins\C4D_MeshCheck"
 $dest   = "\\vmware-host\Shared Folders\plugins\C4D_MeshCheck"
+$resSrc = "C:\Users\user\Desktop\cpp\C4D_MeshCheck\res"
 
-Write-Host "`n[DEPLOYMENT 2026] Deploying C4D_MeshCheck to $dest..."
+Write-Host "`n[DEPLOYMENT 2025] Deploying C4D_MeshCheck to $dest..."
 
 if (-not (Test-Path $dest)) {
     New-Item -ItemType Directory -Path $dest -Force | Out-Null
@@ -22,7 +23,8 @@ if (Test-Path -LiteralPath $xdl) {
     }
 }
 
-Copy-Item -Path "$source\*" -Destination $dest -Recurse -Force
+Copy-Item -Path "$source\C4D_MeshCheck.xdl64" -Destination $dest -Force
+Copy-Item -Path $resSrc -Destination $dest -Recurse -Force
 
 Get-ChildItem -LiteralPath $dest -Filter "*.old" -File | ForEach-Object {
     try { Remove-Item -LiteralPath $_.FullName -Force -ErrorAction SilentlyContinue } catch {}
