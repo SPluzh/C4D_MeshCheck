@@ -46,8 +46,8 @@ private:
     mutable Int32  m_lastPolyCount = 0;
     mutable Float  m_lastThreshold = -1.0;
     mutable Bool   m_lastShowAngle = true;
+    mutable Bool   m_lastAngleIgnoreHard = false;
     mutable Bool   m_lastShowHardEdges = false;
-    mutable Bool   m_lastHardIncludePhongAngle = true;
     mutable Bool   m_lastShowUVSeams = false;
     mutable Bool   m_lastShowBoundary = false;
     mutable Bool   m_lastEnabled = true;

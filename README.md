@@ -67,12 +67,12 @@ Inspired by Cinema 4D's native modeling mesh checker, **C4D_MeshCheck** provides
 | **Depth Test** (`MESHCHECK_DEPTH_TEST`) | Occlude edges behind geometry (Z-buffer test) | `On` |
 | **Highlight by Angle** (`MESHCHECK_SHOW_ANGLE`) | Toggle dihedral angle threshold analysis | `On` |
 | **Highlight from Angle** (`MESHCHECK_ANGLE_THRESHOLD`) | Angle starting from which edges are highlighted (in degrees) | `89°` |
+| **Ignore Hard Edges** (`MESHCHECK_ANGLE_IGNORE_HARD`) | Do not highlight angle if a hard edge is set on the edge | `Off` |
 | **Use Angle Gradient** (`MESHCHECK_USE_GRADIENT`) | Smooth color transition from yellow to red | `On` |
 | **Edge Color** (`MESHCHECK_EDGE_COLOR`) | Solid color (when gradient is disabled) | Orange-Red |
 | **Color at Min Angle** (`MESHCHECK_COLOR_MIN`) | Edge color at the minimum angle threshold | Yellow / Amber |
 | **180° Color** (`MESHCHECK_COLOR_MAX`) | Edge color at maximum angle / inverted normals | Bright Red |
 | **Highlight Hard Edges** (`MESHCHECK_SHOW_HARD_EDGES`) | Highlight Phong breaks and split normals | `On` |
-| **Include Phong Tag Angle** (`MESHCHECK_HARD_PHONG_ANGLE`) | Include edges exceeding the Phong tag's angle limit | `On` |
 | **Hard Edge Color** (`MESHCHECK_HARD_EDGE_COLOR`) | Viewport color for hard edges | Dodger Blue |
 | **Highlight UV Seams** (`MESHCHECK_SHOW_UV_SEAMS`) | Highlight UV island seams / chart borders | `On` |
 | **UV Seam Color** (`MESHCHECK_UV_SEAM_COLOR`) | Viewport color for UV seams | Lime Green |
@@ -86,7 +86,7 @@ Inspired by Cinema 4D's native modeling mesh checker, **C4D_MeshCheck** provides
 
 ## Installation
 
-1. Download the release package: [`C4D_MeshCheck_v1.0.1.zip`](C4D_MeshCheck_v1.0.1.zip).
+1. Download the release package: [`C4D_MeshCheck_v1.0.2.zip`](C4D_MeshCheck_v1.0.2.zip).
 2. Extract the folder corresponding to your Cinema 4D version (`2025` or `2026`) into your Cinema 4D `plugins` directory:
    - **Windows:** `C:\Program Files\Maxon Cinema 4D 2026\plugins\C4D_MeshCheck`
    - *Or your custom plugins path configured in Preferences → Plugins.*
