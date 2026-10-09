@@ -4,8 +4,8 @@
 #include "c4d.h"
 #include "description/tmeshcheck.h"
 
-#define PLUGIN_ID_MESHCHECK_TAG     1067830
-#define PLUGIN_ID_MESHCHECK_COMMAND 1067831
+#define PLUGIN_ID_MESHCHECK_TAG     1071073
+#define PLUGIN_ID_MESHCHECK_COMMAND 1071075
 
 namespace cinema
 {
